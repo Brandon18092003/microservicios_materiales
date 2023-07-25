@@ -1,0 +1,14 @@
+package com.cuaderno.service.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.cuaderno.service.entity.Cuaderno;
+
+@Repository
+public interface CuadernoRepository extends JpaRepository<Cuaderno, Integer>{
+
+	List<Cuaderno> findByUsuario(int usuarioId);
+}

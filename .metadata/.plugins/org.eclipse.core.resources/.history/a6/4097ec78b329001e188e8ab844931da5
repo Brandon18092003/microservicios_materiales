@@ -1,0 +1,5 @@
+package com.libro.service.entity;
+
+public class Libro {
+
+}
