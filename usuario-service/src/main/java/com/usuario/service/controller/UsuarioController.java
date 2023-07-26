@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,55 +18,74 @@ import com.usuario.service.models.Cuaderno;
 import com.usuario.service.models.Libro;
 import com.usuario.service.service.UsuarioService;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 @RestController
 @RequestMapping("/usuario")
 public class UsuarioController {
-	
+
 	@Autowired
 	private UsuarioService usuarioService;
-	
+
 	@GetMapping
-	public ResponseEntity<List<Usuario>> listarUsuarios(){
-		List<Usuario> usuarios =usuarioService.getAll();
-		if(usuarios.isEmpty()) {
+	public ResponseEntity<List<Usuario>> listarUsuarios() {
+		List<Usuario> usuarios = usuarioService.getAll();
+		if (usuarios.isEmpty()) {
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.ok(usuarios);
 	}
-	
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<Usuario> obtenerUsuario(@PathVariable("id") int id) {
-	    Usuario usuario = usuarioService.getUsuarioById(id);
-	    if (usuario == null) {
-	        return ResponseEntity.notFound().build();
-	    }
-	    return ResponseEntity.ok(usuario);
+		Usuario usuario = usuarioService.getUsuarioById(id);
+		if (usuario == null) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(usuario);
 	}
-	
+
 	@PostMapping
-	public ResponseEntity<Usuario> guardarUsuario(@RequestBody Usuario usuario){
+	public ResponseEntity<Usuario> guardarUsuario(@RequestBody Usuario usuario) {
 		Usuario nuevoUsuario = usuarioService.save(usuario);
 		return ResponseEntity.ok(nuevoUsuario);
 	}
-	
+
+	@CircuitBreaker(name = "cuadernosCB", fallbackMethod = "fallBackSaveCuaderno")
 	@PostMapping("/cuaderno/{usuarioId}")
-	public ResponseEntity<Cuaderno> guardarCuaderno(@PathVariable("usuarioId") int usuarioId,@RequestBody Cuaderno cuaderno){
+	public ResponseEntity<Cuaderno> guardarCuaderno(@PathVariable("usuarioId") int usuarioId,
+			@RequestBody Cuaderno cuaderno) {
 		Cuaderno nuevoCuaderno = usuarioService.saveCuaderno(usuarioId, cuaderno);
 		return ResponseEntity.ok(nuevoCuaderno);
 	}
-	
+
+	@CircuitBreaker(name = "librosCB", fallbackMethod = "fallBackSaveLibro")
 	@PostMapping("/libro/{usuarioId}")
-	public ResponseEntity<Libro> guardarLibro(@PathVariable("usuarioId") int usuarioId,@RequestBody Libro libro){
+	public ResponseEntity<Libro> guardarLibro(@PathVariable("usuarioId") int usuarioId, @RequestBody Libro libro) {
 		Libro nuevoLibro = usuarioService.saveLibro(usuarioId, libro);
 		return ResponseEntity.ok(nuevoLibro);
 	}
-	
+
+	@CircuitBreaker(name = "todosCB", fallbackMethod = "fallBackGetTodos")
 	@GetMapping("/todos/{usuarioId}")
-	public ResponseEntity<Map<String, Object>> listarTodosLosMateriales(@PathVariable("usuarioId") int usuarioId){
+	public ResponseEntity<Map<String, Object>> listarTodosLosMateriales(@PathVariable("usuarioId") int usuarioId) {
 		Map<String, Object> resultado = usuarioService.getUsuarioAndMateriales(usuarioId);
 		return ResponseEntity.ok(resultado);
 	}
-	
+
+	private ResponseEntity<List<Cuaderno>> fallBackSaveCuaderno(@PathVariable("usuarioId") int id,
+			@RequestBody Cuaderno cuaderno, RuntimeException exception) {
+		return new ResponseEntity("El usuario: " + id + "no tiene dinero para los cuadernos", HttpStatus.OK);
+	}
+
+	private ResponseEntity<List<Libro>> fallBackSaveLibro(@PathVariable("usuarioId") int id, @RequestBody Libro libro,
+			RuntimeException exception) {
+		return new ResponseEntity("El usuario: " + id + "no tiene dinero para los libros", HttpStatus.OK);
+	}
+
+	private ResponseEntity<List<Cuaderno>> fallBackGetTodos(@PathVariable("usuarioId") int id,
+			RuntimeException exception) {
+		return new ResponseEntity("El usuario: " + id + " tiene los materiales en su casa", HttpStatus.OK);
+	}
 
 }
