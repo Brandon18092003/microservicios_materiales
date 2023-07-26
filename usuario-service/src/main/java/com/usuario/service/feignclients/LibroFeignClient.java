@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.usuario.service.models.Libro;
 
-@FeignClient(name = "libro-service",url = "http://localhost:8082")
+@FeignClient(name = "libro-service")
 @RequestMapping("/libro")
 public interface LibroFeignClient {
 
