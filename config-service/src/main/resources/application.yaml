@@ -5,7 +5,7 @@ spring:
     config:
       server:
         git:
-          default-label: multiple-instances
+          default-label: gateway
           uri: https://github.com/Brandon18092003/microservicios_materiales
           search-paths: config-data
   application:
