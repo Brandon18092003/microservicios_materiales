@@ -1,5 +1,0 @@
-package com.cuaderno.service.repository;
-
-public interface CuadernoRepository {
-
-}

@@ -1,4 +1,4 @@
-GitRepositoriesView.GitDirectories=D\:\\Spring-Tools-suite-4\\workspace\\microservicios\\.git;
-GitRepositoriesView.GitDirectories.relative=microservicios\\.git;
+GitRepositoriesView.GitDirectories=D\:\\Spring-Tools-suite-4\\workspace\\.git;D\:\\Spring-Tools-suite-4\\workspace\\microservicios\\.git;
+GitRepositoriesView.GitDirectories.relative=.git;microservicios\\.git;
 core_autoIgnoreDerivedResources=false
 eclipse.preferences.version=1

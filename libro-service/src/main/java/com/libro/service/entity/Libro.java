@@ -1,15 +1,10 @@
 package com.libro.service.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-@Entity
+@javax.persistence.Entity
 public class Libro {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@javax.persistence.Id
+	@javax.persistence.GeneratedValue(strategy = javax.persistence.GenerationType.IDENTITY)
 	private int id;
 
 	private String marca;
